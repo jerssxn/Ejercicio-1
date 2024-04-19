@@ -1,4 +1,4 @@
-(def factura
+(def factura  ; Se define la factura como un mapa en Clojure
   {:invoice/id    "i1"
    :invoice/items [{:invoice-item/id          "ii1"
                     :invoice-item/sku         "SKU 1"
@@ -29,13 +29,13 @@
                                                 :retention/category :ret_fuente
                                                 :retention/rate     2}]}]})
 
-(defn filtrar-articulos [factura]
-  (let [iva-19? #(= (:tax/rate (first (:taxable/taxes %))) 19)
+(defn filtrar-articulos [factura]   ;Esta función toma la factura como argumento y devuelve una lista de los artículos que cumplen con las condiciones
+  (let [iva-19? #(= (:tax/rate (first (:taxable/taxes %))) 19) ;Utiliza let para definir dos funciones anónimas, iva-19? y retencion-1?, que verifican si un artículo tiene un IVA del 19% o una retención del 1%, respectivamente
         retencion-1? #(= (:retention/rate (first (:retentionable/retentions %))) 1)]
     (->> factura
          :invoice/items
          (filter #(or (and (iva-19? %) (not (retencion-1? %)))
                       (and (not (iva-19? %)) (retencion-1? %)))))))
 
-(def articulos_filtrados
+(def articulos_filtrados  ;Finalmente, se asigna el resultado de llamar a filtrar-articulos con la factura como argumento a la variable articulos_filtrados, que contendrá los artículos filtrados
   (filtrar-articulos factura))
